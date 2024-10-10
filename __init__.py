@@ -1,28 +1,4 @@
-# MIT License
-
-# Copyright (c) 2017 GiveMeAllYourCats
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the 'Software'), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-# Code author: GiveMeAllYourCats
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
-# Edits by: GiveMeAllYourCats, Hotox
+# GPL License
 
 bl_info = {
     'name': 'Cats Blender Plugin',
@@ -36,7 +12,7 @@ bl_info = {
     'tracker_url': 'https://github.com/michaeldegroot/cats-blender-plugin/issues',
     'warning': '',
 }
-dev_branch = False
+dev_branch = True
 
 import os
 import sys
@@ -49,6 +25,8 @@ if file_dir not in sys.path:
 import shutil
 import pathlib
 import requests
+
+from importlib.util import find_spec
 
 from . import globs
 
@@ -63,6 +41,8 @@ else:
 if not is_reloading:
     # This order is important
     import mmd_tools_local
+    if find_spec("imscale") and find_spec("imscale.immersive_scaler"):
+        import imscale.immersive_scaler as imscale
     from . import updater
     from . import tools
     from . import ui
@@ -71,6 +51,8 @@ else:
     import importlib
     importlib.reload(updater)
     importlib.reload(mmd_tools_local)
+    if 'imscale' in vars():
+        importlib.reload(imscale)
     importlib.reload(tools)
     importlib.reload(ui)
     importlib.reload(extentions)
@@ -79,10 +61,10 @@ from .tools import translations
 from .tools.translations import t
 
 
-# How to update mmd_tools: (outdated, no longer used)
+# How to update mmd_tools:
 # Delete mmd_tools_local folder
-# Paste mmd_tools folder into project
-# Refactor folder name "mmd_tools" to "mmd_tools_local"
+# Paste updated mmd_tools folder into root of project
+# Refactor folder name "mmd_tools" to "mmd_tools_local" and update all references
 # Move mmd_tools_local folder into extern_tools folder
 # Search for "show_backface_culling" and set it to False in view.py
 # Done
@@ -284,6 +266,14 @@ def register():
     except ValueError:
         print('mmd_tools is already registered')
 
+    # Register immersive scaler if it's loaded
+    if find_spec("imscale") and find_spec("imscale.immersive_scaler"):
+        import imscale.immersive_scaler as imscale
+        try:
+            imscale.register()
+        except ModuleNotFoundError:
+            pass
+
     # Register all classes
     count = 0
     tools.register.order_classes()
@@ -316,7 +306,7 @@ def register():
     else:
         pass  # From 2.83 on this is no longer needed
     tools.common.get_user_preferences().filepaths.use_file_compression = True
-    bpy.context.window_manager.addon_support = {'OFFICIAL', 'COMMUNITY', 'TESTING'}
+    bpy.context.window_manager.addon_support = {'OFFICIAL', 'COMMUNITY'}
 
     # Add shapekey button to shapekey menu
     if hasattr(bpy.types, 'MESH_MT_shape_key_specials'):  # pre 2.80
@@ -359,6 +349,14 @@ def unregister():
         print('mmd_tools was not registered')
         pass
 
+    # Unload immersive scaler
+    if find_spec("imscale") and find_spec("imscale.immersive_scaler"):
+        import imscale.immersive_scaler as imscale
+        try:
+            imscale.unregister()
+        except ModuleNotFoundError:
+            pass
+
     # Unload all classes in reverse order
     count = 0
     for cls in reversed(tools.register.__bl_ordered_classes):
@@ -385,6 +383,8 @@ def unregister():
     # Remove folder from sys path
     if file_dir in sys.path:
         sys.path.remove(file_dir)
+
+    tools.settings.stop_apply_settings_threads()
 
     print("### Unloaded CATS successfully!\n")
 

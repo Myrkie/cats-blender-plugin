@@ -1,3 +1,5 @@
+# GPL License
+
 import bpy
 
 from .. import globs
@@ -53,21 +55,13 @@ class DecimationPanel(ToolPanel, bpy.types.Panel):
         box = layout.box()
         col = box.column(align=True)
 
-        # row = col.row(align=True)
-        # row.label(text='Auto Decimation is currently experimental.')
-        # row = col.row(align=True)
-        # row.scale_y = 0.5
-        # row.label(text='It works but it might not look good. Test for yourself.')
-        # col.separator()
         row = col.row(align=True)
         row.label(text=t('DecimationPanel.decimationMode'))
         row = col.row(align=True)
         row.prop(context.scene, 'decimation_mode', expand=True)
         row = col.row(align=True)
         row.scale_y = 0.7
-        if context.scene.decimation_mode == 'SMART':
-            row.label(text=t('DecimationPanel.smartModeDesc'))
-        elif context.scene.decimation_mode == 'SAFE':
+        if context.scene.decimation_mode == 'SAFE':
             row.label(text=t('DecimationPanel.safeModeDesc'))
         elif context.scene.decimation_mode == 'HALF':
             row.label(text=t('DecimationPanel.halfModeDesc'))
@@ -123,7 +117,7 @@ class DecimationPanel(ToolPanel, bpy.types.Panel):
                 row.operator(Decimation.AddMeshButton.bl_idname, icon=globs.ICON_ADD)
                 col.separator()
 
-                if context.scene.add_mesh == '':
+                if Common.is_enum_empty(context.scene.add_mesh):
                     row = col.row(align=True)
                     col.label(text=t('DecimationPanel.warn.noDecimation'), icon='ERROR')
 
@@ -148,18 +142,6 @@ class DecimationPanel(ToolPanel, bpy.types.Panel):
                 col.label(text=t('DecimationPanel.warn.correctWhitelist'), icon='INFO')
                 row = col.row(align=True)
 
-            # # row = col.row(align=True)
-            # # rows = 2
-            # # row = layout.row()
-            # # row.template_list("auto.decimate_list", "", bpy.context.scene, "auto", bpy.context.scene, "custom_index", rows=rows)
-            #
-            # obj = context.object
-            #
-            # # template_list now takes two new args.
-            # # The first one is the identifier of the registered UIList to use (if you want only the default list,
-            # # with no custom draw code, use "UI_UL_list").
-            # layout.template_list("ShapekeyList", "", ('heyho', 'heyho2'), "material_slots", ('heyho', 'heyho2'), "active_material_index")
-
         col.separator()
         col.separator()
         row = col.row(align=True)
@@ -167,12 +149,7 @@ class DecimationPanel(ToolPanel, bpy.types.Panel):
         row = col.row(align=True)
         row.prop(context.scene, 'decimation_remove_doubles')
         row = col.row(align=True)
-        row.prop(context.scene, 'decimation_animation_weighting', expand=True)
-        if context.scene.decimation_animation_weighting:
-            row = col.row(align=True)
-            row.separator()
-            row.prop(context.scene, 'decimation_animation_weighting_factor', expand=True)
-            col.separator()
+        row.prop(context.scene, 'decimation_retain_separated_meshes', expand=True)
         row = col.row(align=True)
         row.operator(Decimation.AutoDecimatePresetGood.bl_idname)
         row.operator(Decimation.AutoDecimatePresetExcellent.bl_idname)
@@ -180,7 +157,6 @@ class DecimationPanel(ToolPanel, bpy.types.Panel):
         row = col.row(align=True)
         row.prop(context.scene, 'max_tris')
         col.separator()
-        col.label(text=t('DecimationPanel.warn.notIfBaking'), icon='INFO')
         row = col.row(align=True)
         row.scale_y = 1.2
         row.operator(Decimation.AutoDecimateButton.bl_idname, icon='MOD_DECIM')

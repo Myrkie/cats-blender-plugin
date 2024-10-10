@@ -1,31 +1,9 @@
-# MIT License
-
-# Copyright (c) 2018 Hotox
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the 'Software'), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-# Code author: Hotox
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
-# Edits by:
+# GPL License
 
 import bpy
 import math
+import mathutils
+import struct
 
 from . import common as Common
 from . import armature_bones as Bones
@@ -46,10 +24,7 @@ class ScanButton(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.scene.add_shape_key == "":
-            return False
-
-        return True
+        return Common.is_enum_non_empty(context.scene.add_shape_key)
 
     def execute(self, context):
         shape = context.scene.add_shape_key
@@ -73,9 +48,7 @@ class AddShapeButton(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.scene.add_shape_key == "":
-            return False
-        return True
+        return Common.is_enum_non_empty(context.scene.add_shape_key)
 
     def execute(self, context):
         shape = context.scene.add_shape_key
@@ -99,9 +72,7 @@ class AddMeshButton(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.scene.add_mesh == "":
-            return False
-        return True
+        return Common.is_enum_non_empty(context.scene.add_mesh)
 
     def execute(self, context):
         ignore_meshes.append(context.scene.add_mesh)
@@ -175,17 +146,21 @@ class AutoDecimateButton(bpy.types.Operator):
         saved_data = Common.SavedData()
 
         if context.scene.decimation_mode != 'CUSTOM':
-            mesh = Common.join_meshes(repair_shape_keys=False, armature_name=self.armature_name)
+            if not context.scene.decimation_retain_separated_meshes:
+                mesh = Common.join_meshes(repair_shape_keys=False, armature_name=self.armature_name)
             if self.seperate_materials:
                 Common.separate_by_materials(context, mesh)
 
         self.decimate(context)
 
-        Common.join_meshes(armature_name=self.armature_name)
+        if not context.scene.decimation_retain_separated_meshes:
+            Common.join_meshes(armature_name=self.armature_name)
 
         saved_data.load()
 
         return {'FINISHED'}
+
+
 
     def decimate(self, context):
         print('START DECIMATION')
@@ -195,15 +170,14 @@ class AutoDecimateButton(bpy.types.Operator):
         full_decimation = context.scene.decimation_mode == 'FULL'
         half_decimation = context.scene.decimation_mode == 'HALF'
         safe_decimation = context.scene.decimation_mode == 'SAFE'
-        smart_decimation = context.scene.decimation_mode == 'SMART'
         save_fingers = context.scene.decimate_fingers
-        animation_weighting = context.scene.decimation_animation_weighting
-        animation_weighting_factor = context.scene.decimation_animation_weighting_factor
+        retain_separated_meshes = context.scene.decimation_retain_separated_meshes
         max_tris = context.scene.max_tris
         meshes = []
         current_tris_count = 0
         tris_count = 0
 
+        armature = Common.get_armature(armature_name=self.armature_name)
         meshes_obj = Common.get_meshes_objects(armature_name=self.armature_name)
 
         for mesh in meshes_obj:
@@ -215,94 +189,7 @@ class AutoDecimateButton(bpy.types.Operator):
                 Common.remove_doubles(mesh, 0.00001, save_shapes=True)
             current_tris_count += Common.get_tricount(mesh.data.polygons)
 
-        if animation_weighting:
-            for mesh in meshes_obj:
-                # Weight by multiplied bone weights for every pair of bones.
-                # This is O(n*m^2) for n verts and m bones, generally runs relatively quickly.
-                weights = dict()
-                for vertex in mesh.data.vertices:
-                    v_weights = [group.weight for group in vertex.groups]
-                    v_mults = []
-                    for idx1, w1 in enumerate(vertex.groups):
-                        for idx2, w2 in enumerate(vertex.groups):
-                            if idx1 != idx2:
-                                # Weight [vgroup * vgroup] for index = <mult>
-                                if (w1.group, w2.group) not in weights:
-                                    weights[(w1.group, w2.group)] = dict()
-                                weights[(w1.group, w2.group)][vertex.index] = w1.weight * w2.weight
-
-                # Normalize per vertex group pair
-                normalizedweights = dict()
-                for pair, weighting in weights.items():
-                    m_min = 1
-                    m_max = 0
-                    for _, weight in weighting.items():
-                        m_min = min(m_min, weight)
-                        m_max = max(m_max, weight)
-
-                    if pair not in normalizedweights:
-                        normalizedweights[pair] = dict()
-                    for v_index, weight in weighting.items():
-                        try:
-                            normalizedweights[pair][v_index] = (weight - m_min) / (m_max - m_min)
-                        except ZeroDivisionError:
-                            normalizedweights[pair][v_index] = weight
-
-                newweights = dict()
-                for pair, weighting in normalizedweights.items():
-                    for v_index, weight in weighting.items():
-                        try:
-                            newweights[v_index] = max(newweights[v_index], weight)
-                        except KeyError:
-                            newweights[v_index] = weight
-
-                s_weights = dict()
-
-                # Weight by relative shape key movement. This is kind of slow, but not too bad. It's O(n*m) for n verts and m shape keys,
-                # but shape keys contain every vert (not just the ones they impact)
-                # For shape key in shape keys:
-                if mesh.data.shape_keys is not None:
-                    for key_block in mesh.data.shape_keys.key_blocks[1:]:
-                        basis = mesh.data.shape_keys.key_blocks[0]
-                        s_weights[key_block.name] = dict()
-
-                        for idx, vert in enumerate(key_block.data):
-                            s_weights[key_block.name][idx] = math.sqrt(math.pow(basis.data[idx].co[0] - vert.co[0], 2.0) +
-                                                                            math.pow(basis.data[idx].co[1] - vert.co[1], 2.0) +
-                                                                            math.pow(basis.data[idx].co[2] - vert.co[2], 2.0))
-
-                # normalize min/max vert movement
-                s_normalizedweights = dict()
-                for keyname, weighting in s_weights.items():
-                    m_min = math.inf
-                    m_max = 0
-                    for _, weight in weighting.items():
-                        m_min = min(m_min, weight)
-                        m_max = max(m_max, weight)
-
-                    if keyname not in s_normalizedweights:
-                        s_normalizedweights[keyname] = dict()
-                    for v_index, weight in weighting.items():
-                        try:
-                            s_normalizedweights[keyname][v_index] = (weight - m_min) / (m_max - m_min)
-                        except ZeroDivisionError:
-                            s_normalizedweights[keyname][v_index] = weight
-
-                # find max normalized movement over all shape keys
-                for pair, weighting in s_normalizedweights.items():
-                    for v_index, weight in weighting.items():
-                        try:
-                            newweights[v_index] = max(newweights[v_index], weight)
-                        except KeyError:
-                            newweights[v_index] = weight
-
-                # TODO: ignore shape keys which move very little?
-                context.view_layer.objects.active = mesh
-                bpy.ops.object.vertex_group_add()
-                mesh.vertex_groups[-1].name = "CATS Animation"
-                for idx, weight in newweights.items():
-                    mesh.vertex_groups[-1].add([idx], weight, "REPLACE")
-
+        finger_pairs = []
         if save_fingers:
             for mesh in meshes_obj:
                 if len(mesh.vertex_groups) > 0:
@@ -316,10 +203,13 @@ class AutoDecimateButton(bpy.types.Operator):
                         vgs = [mesh.vertex_groups.get(finger + 'L'), mesh.vertex_groups.get(finger + 'R')]
                         for vg in vgs:
                             if vg:
+                                Common.unselect_all()
                                 bpy.ops.object.vertex_group_set_active(group=vg.name)
                                 bpy.ops.object.vertex_group_select()
                                 try:
                                     bpy.ops.mesh.separate(type='SELECTED')
+                                    if retain_separated_meshes:
+                                        finger_pairs.append((mesh.name, context.selected_objects[-1].name))
                                 except RuntimeError:
                                     pass
 
@@ -338,19 +228,6 @@ class AutoDecimateButton(bpy.types.Operator):
             if Common.has_shapekeys(mesh):
                 if full_decimation:
                     bpy.ops.object.shape_key_remove(all=True)
-                    meshes.append((mesh, tris))
-                    tris_count += tris
-                elif smart_decimation:
-                    if len(mesh.data.shape_keys.key_blocks) == 1:
-                        bpy.ops.object.shape_key_remove(all=True)
-                    else:
-                        mesh.active_shape_key_index = 0
-                        # Sanity check, make sure basis isn't against something weird
-                        mesh.active_shape_key.relative_key = mesh.active_shape_key
-                        # Add a duplicate basis key which we un-apply to fix shape keys
-                        bpy.ops.object.shape_key_add(from_mix=False)
-                        mesh.active_shape_key.name = "CATS Basis"
-                        mesh.active_shape_key_index = 0
                     meshes.append((mesh, tris))
                     tris_count += tris
                 elif custom_decimation:
@@ -393,7 +270,7 @@ class AutoDecimateButton(bpy.types.Operator):
             elif custom_decimation:
                 message.append(t('decimate.customTryOptions'))
             if save_fingers:
-                if full_decimation or smart_decimation:
+                if full_decimation:
                     message.append(t('decimate.disableFingersOrIncrease'))
                 else:
                     message[1] = message[1][:-1]
@@ -429,43 +306,10 @@ class AutoDecimateButton(bpy.types.Operator):
             print(decimation)
 
             # Apply decimation mod
-            if not smart_decimation:
-                mod = mesh_obj.modifiers.new("Decimate", 'DECIMATE')
-                mod.ratio = decimation
-                mod.use_collapse_triangulate = True
-                if animation_weighting:
-                    mod.vertex_group = "CATS Animation"
-                    mod.vertex_group_factor = animation_weighting_factor
-                    mod.invert_vertex_group = True
-                Common.apply_modifier(mod)
-            else:
-                Common.switch('EDIT')
-                bpy.ops.mesh.select_mode(type="VERT")
-                bpy.ops.mesh.select_all(action="SELECT")
-                # TODO: Fix decimation calculation when pinning seams
-                if self.preserve_seams:
-                    bpy.ops.mesh.select_all(action="DESELECT")
-                    bpy.ops.uv.seams_from_islands()
-
-                    # select all seams
-                    Common.switch('OBJECT')
-                    me = mesh_obj.data
-                    for edge in me.edges:
-                        if edge.use_seam:
-                            edge.select = True
-
-                    Common.switch('EDIT')
-                    bpy.ops.mesh.select_all(action="INVERT")
-
-                #TODO: On many meshes, un-subdividing until it's near the target verts and then decimating the rest of the way
-                #      results in MUCH better topology. Something to figure out against 2.93
-                bpy.ops.mesh.decimate(ratio=decimation,
-                                      use_vertex_group=animation_weighting,
-                                      vertex_group_factor=animation_weighting_factor,
-                                      invert_vertex_group=True,
-                                      use_symmetry=True,
-                                      symmetry_axis='X')
-                Common.switch('OBJECT')
+            mod = mesh_obj.modifiers.new("Decimate", 'DECIMATE')
+            mod.ratio = decimation
+            mod.use_collapse_triangulate = True
+            Common.apply_modifier(mod)
 
             tris_after = len(mesh_obj.data.polygons)
             print(tris)
@@ -473,20 +317,19 @@ class AutoDecimateButton(bpy.types.Operator):
 
             current_tris_count = current_tris_count - tris + tris_after
             tris_count = tris_count - tris
-            # Repair shape keys if SMART mode is enabled
-            if smart_decimation and Common.has_shapekeys(mesh_obj):
-                for idx in range(1, len(mesh_obj.data.shape_keys.key_blocks) - 1):
-                    mesh_obj.active_shape_key_index = idx
-                    Common.switch('EDIT')
-                    bpy.ops.mesh.blend_from_shape(shape="CATS Basis", blend=-1.0, add=True)
-                    Common.switch('OBJECT')
-                mesh_obj.shape_key_remove(key=mesh_obj.data.shape_keys.key_blocks["CATS Basis"])
-                mesh_obj.active_shape_key_index = 0
-
-
-
 
             Common.unselect_all()
+
+        if len(finger_pairs) > 0:
+            Common.switch('OBJECT')
+            for (orig_name, finger_name) in finger_pairs:
+                orig = bpy.data.objects[orig_name]
+                finger = bpy.data.objects[finger_name]
+                finger.select_set(True)
+                orig.select_set(True)
+                bpy.context.view_layer.objects.active = orig
+                bpy.ops.object.join()
+                Common.unselect_all()
 
         # # Check if decimated correctly
         # if decimation < 0:

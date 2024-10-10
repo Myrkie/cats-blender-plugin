@@ -2,17 +2,17 @@ name,en_US,ja_JP,ko_KR
 Main.error.restartAdmin,"
 
 Faulty CATS installation found!
-To fix this restart Blender as admin!     
+To fix this restart Blender as admin!
 ",,"
 
 잘못 설치된 Cats Plugin이 발견되었습니다!
-이 문제를 해결하려면 Blender를 관리자로 다시 시작하세요!     
+이 문제를 해결하려면 Blender를 관리자로 다시 시작하세요!
 "
-Main.error.deleteFollowing,"                                                                                                                                                                                                         
+Main.error.deleteFollowing,"
 
 Faulty CATS installation found!
 To fix this delete the following files and folders inside your addons folder:
-",,"                                                                                                                                                                                                         
+",,"
 
 잘못 설치된 Cats Plugin이 발견되었습니다!
 이 문제를 해결하려면 addons 폴더에서 다음 파일과 폴더를 삭제하세요.:
@@ -37,11 +37,11 @@ Blender를 다시 시작하고 Cats Plugin를 다시 활성화하세요!
 "
 Main.error.unsupportedVersion,"
 
-Blender versions older than 2.79 are not supported by Cats. 
+Blender versions older than 2.79 are not supported by Cats.
 Please use Blender 2.79 or later.
 ",,"
 
-2.79 이전의 블렌더 버전은 Cats에서 지원하지 않습니다. 
+2.79 이전의 블렌더 버전은 Cats에서 지원하지 않습니다.
 Blender 2.79 버전 이상을 사용하세요.
 "
 Main.error.beta2.80,"
@@ -63,6 +63,9 @@ Blender를 다시 시작하고 Cats Plugin를 다시 활성화하세요!
 ToolPanel.label,Cats Blender Plugin,Cats ブレンダープラグイン,
 ToolPanel.category,CATS,,
 ArmaturePanel.label,Model,モデル,모델
+ArmaturePanel.warn.newBlender1,Potentially unsupported Blender version detected!
+ArmaturePanel.warn.newBlender2,Some features might not work!
+ArmaturePanel.warn.newBlender3,CATS currently supports up to Blender 3.5.
 ArmaturePanel.warn.oldBlender1,Old Blender version detected!,古いブレンダーバージョンが検出されました!,이전 블렌더 버전이 발견되었습니다!
 ArmaturePanel.warn.oldBlender2,Some features might not work!,一部の機能は動作しない可能性があります!,일부 기능이 작동하지 않을 수 있습니다!
 ArmaturePanel.warn.oldBlender3,Please update to Blender 2.79!,ブレンダー2.79以上にアップデートしてください!,블렌더 2.79 버전으로 업데이트하세요!
@@ -127,16 +130,9 @@ DecimationPanel.warn.noDecimation,Every mesh is selected. This equals no Decimat
 DecimationPanel.warn.noMeshSelected,No mesh selected,メッシュが選択されていません,선택된 메쉬가 없음
 DecimationPanel.warn.emptyList,"Both lists are empty, this equals Full Decimation!",両方のリストが空で、これは完全なデシメーションに等しい!,양쪽 리스트들이 비어있어 전체 메쉬의 버텍스를 줄이는 것과 같습니다!
 DecimationPanel.warn.correctWhitelist,Both whitelists are considered during decimation,両方のホワイトリストはデシメーション中に考慮されます,양쪽 화이트리스트들은 데시메이션 중에 고려됩니다.
-DecimationPanel.preset.excellent.label,Excellent,優れた,
-DecimationPanel.preset.excellent.description,The maximum number of tris you can have for an Excellent rating.,優れた評価を得るために持つことができるトリスの最大数,당신의 아바타가 Excellent 등급을 받을 수 있는 최대 삼각폴리곤(Tris) 개수입니다.
-DecimationPanel.preset.good.label,Good,良い,
-DecimationPanel.preset.good.description,The maximum number of tris you can have for a Good rating.,あなたが良い評価のために持つことができるトリスの最大数,당신의 아바타가 Good 등급을 받을 수 있는 최대 삼각폴리곤(Tris) 개수입니다.
-DecimationPanel.preset.quest.label,Quest,,
-DecimationPanel.preset.quest.description,"The recommended number of tris for Quest avatars.
 A hard limit will be established in the future that will not be much more than this.","Questアバターの推奨トリス数.
 将来的には、これをはるかに超えることのない厳しい制限が設定されます。","퀘스트용 아바타들을 위해 권장되는 삼각폴리곤(Tris)의 개수입니다.
 앞으로는 이보다 심하지는 않을 엄격한 제한이 설정될 것입니다."
-DecimationPanel.warn.notIfBaking,Not reccomended if baking!,,베이킹 할 시 권장되지 않습니다!
 EyeTrackingPanel.label,Eye Tracking,アイトラッキング,눈 추적(Eye Tracking)
 EyeTrackingPanel.error.noMesh,No meshes found!,メッシュが見つかりません!,메쉬가 발견되지 않음!
 EyeTrackingPanel.error.noArm,No model found!,モデルが見つかりません!,모델이 발견되지 않음!
@@ -146,7 +142,7 @@ EyeTrackingPanel.error.wrongNameArm3,      (currently ',      (現在は ',     
 EyeTrackingPanel.error.wrongNameBody1,The mesh containing the eyes has to be,アイトラッキングが機能するには,눈들을 포함한 메쉬는 반드시
 EyeTrackingPanel.error.wrongNameBody2,      named 'Body' for Eye Tracking to work!,      目を含むメッシュに'Body'という名前を付ける必要があります!,      눈 추적(Eye Tracking)을 위해 'Body'로 이름을 지어야 합니다.
 EyeTrackingPanel.error.wrongNameBody3,      (currently ',      (現在は ',      (현재로서는 '
-EyeTrackingPanel.warn.assignEyes1,Don't forget to assign 'LeftEye' and 'RightEye','左目'と'右目' を割り当てることを忘れないでください。,유니티에서 'LeftEye'와 'RightEye'를 
+EyeTrackingPanel.warn.assignEyes1,Don't forget to assign 'LeftEye' and 'RightEye','左目'と'右目' を割り当てることを忘れないでください。,유니티에서 'LeftEye'와 'RightEye'를
 EyeTrackingPanel.warn.assignEyes2,      to the eyes in Unity!,      ユニティの目に,      적용하는 것을 잊지 마세요!
 VisemePanel.label,Visemes,バイセム,립싱크(Visemes)
 VisemePanel.error.noMesh,No meshes found!,メッシュが見つかりません!,메쉬가 발견되지 않음!
@@ -169,17 +165,12 @@ CopyProtectionPanel.label,Copy Protection,コピープロテクション,복사�
 CopyProtectionPanel.desc1,Tries to protect your avatar from Unity cache ripping.,Unity キャッシュリッピングからアバターを保護しようとします。,유니티 캐쉬뜨기로부터 당신의 아바타를 보호하세요.
 CopyProtectionPanel.desc2,This protection is not 100% safe!,この保護は100%安全ではありません!,이 방법도 100% 안전하지는 않습니다!
 CopyProtectionPanel.desc3,Before use: Read the documentation!,使用前: ドキュメントを読んでください!,사용 전에: 문서를 읽어주세요!
-BakePanel.label,Bake,焼く,베이크(Bake)
-BakePanel.versionTooOld,Only for Blender 2.80+,,Blender 2.80 버전 이상에서만 호환
-BakePanel.autodetectlabel,Autodetect:,,자동감지:
-BakePanel.generaloptionslabel,General options:,,일반 옵션:
-BakePanel.noheadfound,"No ""Head"" bone found!",,"""Head"" 본 발견되지 않음!"
-BakePanel.overlapfixlabel,Overlap fix:,,중복 수정:
-BakePanel.bakepasseslabel,Bake passes:,,베이크 패스:
-BakePanel.alphalabel,Alpha:,,
-BakePanel.transparencywarning,Transparency isn't currently selected!,,현재 투명도가 선택되지 않았습니다!
-BakePanel.smoothnesswarning,Smoothness isn't currently selected!,,현재 부드러움이 선택되지 않았습니다!
-BakePanel.doublepackwarning,Smoothness packed in two places!,,두군데에 부드러움이 설정되었습니다!
+ScalingPanel.label,Model Scaling,,
+ScalingPanel.imscaleDisabled1,Immersive Scaler is not enabled!,,
+ScalingPanel.imscaleDisabled2,Enable it in your user preferences:,,
+ScalingPanel.imscaleOldVersion1,Immersive Scaler is not installed!,,
+ScalingPanel.imscaleNotInstalled1,Immersive Scaler is not installed!,,
+ScalingPanel.imscaleNotInstalled2,Download and install it manually:,,
 UpdaterPanel.label,Settings & Updates,設定と更新,세팅 & 업데이트
 UpdaterPanel.name,Settings:,設定:,세팅:
 UpdaterPanel.requireRestart1,Restart required.,再起動が必要.,재시작이 필요합니다.
@@ -194,7 +185,8 @@ CreditsPanel.desc1,Cats Blender Plugin (,,
 CreditsPanel.desc2,Created by Hotox and GiveMeAllYourCats,HotoxとGiveMeAllYourCatsによって作成,멋진 VRChat 커뮤니티를 위해서
 CreditsPanel.desc3,For the awesome VRChat community <3,素晴らしいVRChatコミュニティのために <3,Hotox와 GiveMeAllYourCats에 의해 제작됨 <3
 CreditsPanel.desc4,Special thanks to:,特別な感謝: ShotariyaとNeitri,다음 분들께 특별한 감사를 전합니다:
-CreditsPanel.descContributors,"Feilen, Jordo, Ruubick, Shotariya and Neitri",Feilen、Jordo、Ruubick、ShotariyaとNeitri,"Feilen, Jordo, Ruubick, Shotariya와 Neitri"
+CreditsPanel.descContributors,"Feilen, Jordo, Ruubick, 989onan, triazo,","Feilen、Jordo、Ruubick、989onan、triazo、","Feilen, Jordo, Ruubick, 989onan, triazo,"
+CreditsPanel.descContributors2,"Shotariya and Neitri","ShotariyaとNeitri","Shotariya와 Neitri"
 CreditsPanel.desc5,Do you need help or found a bug?,助けが必要ですか、バグを見つけましたか?,도움이 필요하시거나 혹시 버그를 찾으셨나요?
 FixArmature.label,Fix Model,モデル修正,모델 고치기
 FixArmature.desc,"Automatically:
@@ -228,7 +220,7 @@ FixArmature.cantFix1,Looks like you found a model which Cats could not fix!,,Cat
 FixArmature.cantFix2,If this is a non modified model we would love to make it compatible.,,이것이 수정되지 않은 모델이라면 우리는 호환되도록 만들고 싶습니다.
 FixArmature.cantFix3,"Report it to us in the forum or in our discord, links can be found in the Credits panel.",,포럼이나 디스코드에서 우리에게 신고해주세요. 링크는 크레딧 패널에 있습니다.
 FixArmature.notParent," is not parented at all, this will cause problems!",," 부모설정이 전혀 안됐다면, 이로 인해 문제가 발생할 수 있습니다!"
-FixArmature.notParentTo1, is not parented to ,, 가 
+FixArmature.notParentTo1, is not parented to ,, 가
 FixArmature.notParentTo2,", this will cause problems!",,"의 부모로 설정돼지 않았다면, 이로 인해 문제가 발생할 수 있습니다!"
 StartPoseMode.label,Start Pose Mode,ポーズモードを開始,포즈모드 시작
 StartPoseMode.desc,"Starts the pose mode.
@@ -248,13 +240,7 @@ PoseNamePopup.label,Give this shapekey a name:,このシェイプキーに名前
 PoseNamePopup.desc,Sets the shapekey name. Press anywhere outside to skip,,쉐이프키 이름을 설정합니다. 스킵하려면 아무 곳이나 누르세요.
 PoseNamePopup.success,Pose successfully saved as shape key.,,포즈가 성공적으로 쉐이프키로 저장되었습니다.
 PoseToRest.label,Apply as Rest Pose,レストポーズとして適用する,새로운 기본자세로 적용
-PoseToRest.desc,"This applies the current pose position as the new rest position.
-
-If you scale the bones equally on each axis the shape keys will be scaled correctly as well!
-WARNING: This can have unwanted effects on shape keys, so be careful when modifying the head with this",,"이것은 현재 포즈를 새로운 기본 포즈로 적용합니다.
-
-만약 당신이 뼈들의 스케일을 각 축마다 동일하게 조절했다면 쉐이프키들 또한 올바르게 적용될 것입니다!
-경고: 이것은 쉐이프키에 원치 않는 영향을 줄 수 있기 때문에, 이걸로 머리를 수정할 경우 조심하세요."
+PoseToRest.desc,This applies the current pose position as the new rest position.,,이것은 현재 포즈를 새로운 기본 포즈로 적용합니다.
 PoseToRest.success,Pose successfully applied as rest pose.,,포즈가 성공적으로 기본자세로 적용되었습니다.
 JoinMeshes.label,Join Meshes,メッシュに参加する,메쉬 통합
 JoinMeshes.desc,"Joins all meshes of this model together.
@@ -451,8 +437,17 @@ InstallShotariya.error.version1,Material Combiner is outdated!,,
 InstallShotariya.error.version2,The latest version is required for this function.,,
 InstallShotariya.error.version3,Please download and install it manually:,,
 ShotariyaButton.label,Download Material Combiner,マテリアルコンバイナーをダウンロード,매테리얼 통합기 다운로드
-ShotariyaButton.URL,https://vrcat.club/threads/material-combiner-blender-addon-1-1-3.2255/,,
 ShotariyaButton.success,Material Combiner link opened,,
+ImmersiveScalerButton.success,Immersive Scaler link opened,,
+ImmersiveScalerButton.label,Download Immersive Scaler,,
+ImmersiveScalerButton.desc,Open latest Immersive Scaler release,,
+ImmersiveScalerHelpButton.URL,https://github.com/triazo/immersive_scaler,,
+ImmersiveScalerHelpButton.label,Immersive Scaler Help,,
+ImmersiveScalerHelpButton.desc,Open guide for Immersive Scaler,,
+ImmersiveScalerHelpButton.success,Immersive Scaler Readme opened,,
+EnableIMScale.label,Enable Immersive Scaler,,
+EnableIMScale.desc,Enable Immersive Scaler,,
+EnableIMScale.success,Enabled Immersive Scaler!,,
 BoneMergeButton.label,Merge Bones,ボーンをマージする,뼈 통합
 BoneMergeButton.desc,"Merges the given percentage of bones together.
 This is useful to reduce the amount of bones used by Dynamic Bones.",,
@@ -555,8 +550,8 @@ Supported types:
 - XNALara: .xps/.mesh/.ascii
 - Source: .smd/.qc
 - VRM: .vrm
-- FBX .fbx 
-- DAE: .dae 
+- FBX .fbx
+- DAE: .dae
 - ZIP: .zip",,
 ImportAnyModel.desc2.8,"Import a model of any supported type.
 
@@ -566,7 +561,7 @@ Supported types:
 - Source: .smd/.qc/.vta/.dmx
 - VRM: .vrm
 - FBX: .fbx
-- DAE: .dae 
+- DAE: .dae
 - ZIP: .zip",,
 ImportAnyModel.importantInfo.label,IMPORTANT INFO (hover here),重要な情報(ここにホバー),
 ImportAnyModel.importantInfo.desc,"If you want to modify the import settings, use the button next to the Import button.
@@ -692,18 +687,9 @@ DebugTranslations.error,"Errors found, response printed!!",,
 DebugTranslations.success,"No issues with Google Translations found, response printed!",,
 ShapeKeyApplier.label,Apply Selected Shapekey to Basis,選択したシェイプキーをBasisに適用,선택된 쉐이프키를 Basis에 적용
 ShapeKeyApplier.desc,Applies the selected shape key to the new Basis at it's current strength and creates a reverted shape key from the selected one,,
-ShapeKeyApplier.error.revertCustomBasis,"To revert the shape keys, please apply the ""Reverted"" shape keys in reverse order.
-Start with the shape key called ""{name}"".
-
-If you didn't change the shape key order, you can revert the shape keys from top to bottom.",,
-ShapeKeyApplier.error.revertCustomBasis.scale,7.3,,
-ShapeKeyApplier.error.revert,"To revert the shape keys, please apply the ""Reverted"" shape keys in reverse order.
-Start with the reverted shape key that uses the relative key called ""Basis"".
-
-If you didn't change the shape key order, you can revert the shape keys from top to bottom.",,
-ShapeKeyApplier.error.revert.scale,7.3,,
+ShapeKeyApplier.error.recursiveRelativeToLoop,"Shapekey ""{name}"" is recursively relative to itself, so cannot be applied to the Basis",,
 ShapeKeyApplier.successRemoved,"Successfully removed shapekey ""{name}"" from the Basis.",,
-ShapeKeyApplier.successSet,"Successfully set shapekey ""{name}"" as the new Basis.",,
+ShapeKeyApplier.successSet,"Successfully applied shapekey ""{name}"" to the Basis.",,
 addToShapekeyMenu.ShapeKeyApplier.label,Apply Selected Shapekey to Basis,選択したシェイプキーをBasisに適用,선택된 쉐이프키를 Basis에 적용
 PatreonButton.label,Become a Patron,パトロンになる,후원하기
 PatreonButton.URL,https://www.patreon.com/catsblenderplugin,,
@@ -884,6 +870,9 @@ Not checking this will always apply transforms",,
 Scene.merge_armatures_remove_zero_weight_bones.label,Remove Zero Weight Bones,ゼロウェイトボーンを削除する,제로 웨이트 본 제거
 Scene.merge_armatures_remove_zero_weight_bones.desc,"Cleans up the bones hierarchy, deleting all bones that don't directly affect any vertices.
 Uncheck this if bones or vertex groups that you want to keep got deleted",,
+Scene.merge_armatures_cleanup_shape_keys.label,Cleanup Shape Keys,
+Scene.merge_armatures_cleanup_shape_keys.desc,"Cleans up the meshes shape keys.
+Uncheck this if shape keys you want to keep got deleted",,
 Scene.decimation_mode.label,Decimation Mode,単純化モード,
 Scene.decimation_mode.desc,Decimation Mode,,
 Scene.decimation_mode.smart.label,Smart,スマート,
@@ -987,12 +976,8 @@ RingFinger(1-3)_(L/R)
 LittleFinger(1-3)_(L/R)"
 Scene.decimation_remove_doubles.label,Remove Doubles,重複を削除,이중 제거
 Scene.decimation_remove_doubles.desc,Uncheck this if you get issues with this checked,Uncheck this if you got issues with with this checked,문제가 될 시 체크를 해제하세요
-Scene.decimation_animation_weighting.label,Animation weighting,,
-Scene.decimation_animation_weighting.desc,"Weight decimation based on shape keys and vertex group overlap
-Results in better animating topology by trading off overall shape accuracy
-Use if your elbows/joints end up with bad topology",,
-Scene.decimation_animation_weighting_factor.label,Factor,,
-Scene.decimation_animation_weighting_factor.desc,How much influence the animation weighting has on the overall shape,,
+Scene.decimation_retain_separated_meshes.label,Retain Separated Meshes,,
+Scene.decimation_retain_separated_meshes.desc,Experimental option. Keep existing meshes as separate objects throughout decimation,,
 Scene.max_tris.label,Tris,トリス,삼각폴리곤(Tris)
 Scene.max_tris.desc,The target amount of tris after decimation,,
 Scene.eye_mode.label,Eye Mode,アイモード,
@@ -1076,6 +1061,8 @@ Scene.merge_mesh.label,Mesh,メッシュ,메쉬
 Scene.merge_mesh.desc,The mesh with the bones vertex groups,,
 Scene.merge_bone.label,To Merge,マージするには,통합할 부분
 Scene.merge_bone.desc,List of bones that look like they could be merged together to reduce overall bones,,
+Scene.show_avatar_2_tabs.label,Show Avatar 2.0 tools,
+Scene.show_avatar_2_tabs.desc,Show tools specific to legacy versions of the Avatar API
 Scene.show_mmd_tabs.label,Show mmd_tools,,mmd_tools 탭 보이기
 Scene.show_mmd_tabs.desc,"Allows you to hide/show the mmd_tools tabs ""MMD"" and ""Misc""",,
 Scene.embed_textures.label,Embed Textures on Export,エクスポート時にテクスチャを埋め込む,내보낼 때 텍스처 포함
@@ -1088,111 +1075,6 @@ Scene.use_custom_mmd_tools.label,Use Custom mmd_tools,カスタムmmd_toolsを�
 Scene.use_custom_mmd_tools.desc,Enable this to use your own version of mmd_tools. This will disable the internal cats mmd_tools,,
 Scene.debug_translations.label,Debug Google Translations,Google翻訳をデバッグ,Google 번역 디버그
 Scene.debug_translations.desc,Tests the Google Translations and prints the Google response in case of error,,
-Scene.bake_resolution.label,Resolution,,해상도
-Scene.bake_resolution.desc,"Output resolution for the textures.
-- 2048 is typical for desktop use.
-- 1024 is reccomended for the Quest",,"테스쳐들의 결과 해상도.
-- 2048 데스크탑 용
-- 1024 퀘스트 용"
-Scene.bake_use_decimation.label,Decimate,,버텍스 줄이기(Decimate)
-Scene.bake_use_decimation.desc,"Reduce polycount before baking, then use Normal maps to restore detail",,베이킹하기 전에 폴리 카운트를 줄인 다음 노멀 맵을 사용하여 디테일을 복원합니다.
-Scene.bake_generate_uvmap.label,Generate UVMap,,UV 맵 생성
-Scene.bake_generate_uvmap.desc,"Re-pack islands for your mesh to a new non-overlapping UVMap.
-Only disable if your UVs are non-overlapping already.
-This will leave any map named ""Detail Map"" alone.
-Uses UVPackMaster where available for more efficient UVs, make sure the window is showing",,
-Scene.bake_uv_overlap_correction.label,Overlap correction,,중복 보정
-Scene.bake_uv_overlap_correction.desc,Method used to prevent overlaps in UVMap,,
-Scene.bake_prioritize_face.label,Prioritize Head/Eyes,,머리 / 눈 우선 순위 지정
-Scene.bake_prioritize_face.desc,Scale any UV islands attached to the head/eyes by a given factor.,,
-Scene.bake_face_scale.label,Head/Eyes Scale,,머리 / 눈 스케일
-Scene.bake_face_scale.desc,How much to scale up the face/eyes portion of the textures.,,
-Scene.bake_quick_compare.label,Quick compare,,빠른 비교
-Scene.bake_quick_compare.desc,Move output avatar next to existing one to quickly compare,,
-Scene.bake_illuminate_eyes.label,Set eyes to full brightness,,눈을 최대 밝기로 설정
-Scene.bake_illuminate_eyes.desc,"Relight LeftEye and RightEye to be full brightness.
-Without this, the eyes will have the shadow of the surrounding socket baked in,
-which doesn't animate well",,
-Scene.bake_pass_smoothness.label,Smoothness,,부드러움
-Scene.bake_pass_smoothness.desc,"Bakes Roughness and then inverts the values.
-To use this, it needs to be packed to the Alpha channel of either Diffuse or Metallic.
-Not neccesary if your mesh has a global roughness value",,
-Scene.bake_pass_diffuse.label,Diffuse (Color),,확산 (색상)
-Scene.bake_pass_diffuse.desc,"Bakes diffuse, un-lighted color. Usually you will want this.
-While baking, this temporarily links ""Metallic"" to ""Anisotropic Rotation"" as metallic can cause issues.",,
-Scene.bake_preserve_seams.label,Preserve seams,,이음새 유지
-Scene.bake_preserve_seams.desc,"Forces the Decimate operation to preserve vertices making up seams, preventing hard edges along seams.
-May result in less ideal geometry.
-Use if you notice ugly edges along your texture seams.",,
-Scene.bake_pass_normal.label,Normal (Bump),,노말 (범프)
-Scene.bake_pass_normal.desc,"Bakes a normal (bump) map. Allows you to keep the shading of a complex object with
-the geometry of a simple object. If you have selected 'Decimate', it will create a map
-that makes the low res output look like the high res input.
-Will not work well if you have self-intersecting islands",,
-Scene.bake_normal_apply_trans.label,Apply transforms,,변환 적용
-Scene.bake_normal_apply_trans.desc,"Applies offsets while baking normals. Neccesary if your model has many materials with different normal maps
-Turn this off if applying location causes problems with your model",,
-Scene.bake_pass_ao.label,Ambient Occlusion,,
-Scene.bake_pass_ao.desc,"Bakes Ambient Occlusion, non-projected shadows. Adds a significant amount of detail to your model.
-Reccomended for non-toon style avatars.
-Takes a fairly long time to bake",,
-Scene.bake_pass_questdiffuse.label,Quest Diffuse (Color+AO),,
-Scene.bake_pass_questdiffuse.desc,Blends the result of the Diffuse and AO bakes to make Quest-compatible shading.,,
-Scene.bake_pass_emit.label,Emit,,
-Scene.bake_pass_emit.desc,"Bakes Emit, glowyness",,
-Scene.bake_diffuse_alpha_pack.label,Alpha Channel,,
-Scene.bake_diffuse_alpha_pack.desc,What to pack to the Diffuse Alpha channel,,
-Scene.bake_metallic_alpha_pack.label,Metallic Alpha Channel,,
-Scene.bake_metallic_alpha_pack.desc,What to pack to the Metallic Alpha channel,,
-Scene.bake_pass_alpha.label,Transparency,,
-Scene.bake_pass_alpha.desc,"Bakes transparency by connecting the last Principled BSDF Alpha input
-to the Base Color input and baking Diffuse.
-Not a native pass in Blender, results may vary
-Unused if you are baking to Quest",,
-Scene.bake_pass_metallic.label,Metallic,,
-Scene.bake_pass_metallic.desc,"Bakes metallic by connecting the last Principled BSDF Metallic input
-to the Base Color input and baking Diffuse.
-Not a native pass in Blender, results may vary",,
-Scene.bake_questdiffuse_opacity.label,AO Opacity,,
-Scene.bake_questdiffuse_opacity.desc,"The opacity of the shadows to blend onto the Diffuse map.
-This should match the unity slider for AO on the Desktop version.",,
-Scene.bake_uv_overlap_correction.none.label,None,,
-Scene.bake_uv_overlap_correction.none.desc,Leave islands as they are. Use if islands don't self-intersect at all,,
-Scene.bake_uv_overlap_correction.unmirror.label,Unmirror,,
-Scene.bake_uv_overlap_correction.unmirror.desc,Move all face islands with positive X values over one to un-pin mirrored UVs. Solves most UV pinning issues.,,
-Scene.bake_uv_overlap_correction.reproject.label,Reproject,,
-Scene.bake_uv_overlap_correction.reproject.desc,Use blender's Smart UV Project to come up with an entirely new island layout. Tends to reduce quality.,,
-Scene.bake_diffuse_alpha_pack.none.label,None,,
-Scene.bake_diffuse_alpha_pack.none.desc,No alpha channel,,
-Scene.bake_diffuse_alpha_pack.transparency.label,Transparency,,
-Scene.bake_diffuse_alpha_pack.transparency.desc,Pack Transparency,,
-Scene.bake_diffuse_alpha_pack.smoothness.label,Smoothness,,
-Scene.bake_diffuse_alpha_pack.smoothness.desc,Pack Smoothness. Most efficient if you don't have transparency or metallic textures.,,
-Scene.bake_metallic_alpha_pack.none.label,None,,
-Scene.bake_metallic_alpha_pack.none.desc,No alpha channel,,
-Scene.bake_metallic_alpha_pack.smoothness.label,Smoothness,,
-Scene.bake_metallic_alpha_pack.smoothness.desc,Pack Smoothness. Use this if your Diffuse alpha channel is already populated with Transparency,,
-cats_bake.warn_missing_nodes,"A material in use isn't using Nodes, fix this in the Shading tab.",,
-cats_bake.preset_desktop.label,Desktop,,
-cats_bake.preset_desktop.desc,"Preset for producing an Excellent-rated Desktop avatar, not accounting for bones.
-This will try to automatically detect which bake passes are relevant to your model",,
-cats_bake.preset_quest.label,Quest,,
-cats_bake.preset_quest.desc,"Preset for producing an Excellent-rated Quest avatar, not accounting for bones.
-This will try to automatically detect which bake passes are relevant to your model",,
-cats_bake.bake.label,Copy and Bake (SLOW!),,
-cats_bake.bake.desc,"Perform the bake. Warning, this performs an actual render!
-This will create a copy of your avatar to leave the original alone.
-Depending on your machine and model, this could take an hour or more.
-For each pass, any Value node in your materials labeled bake_<bakename> will be
-set to 1.0, for more granular customization.",,
-cats_bake.error.no_meshes,No meshes found!,,메쉬가 발견되지 않음!
-cats_bake.error.render_engine,You need to set your render engine to Cycles first!,,
-cats_bake.error.render_disabled,One or more of your armature's meshes have rendering disabled!,,
-cats_bake.info.success,Success! Textures and model saved to 'CATS Bake' folder next to your .blend file.,,
-cats_bake.tutorial_button.label,How to use,,사용법
-cats_bake.tutorial_button.desc,This will open the Cats wiki page for the Bake panel,,
-cats_bake.tutorial_button.URL,https://github.com/GiveMeAllYourCats/cats-blender-plugin/wiki/Bake,,
-cats_bake.tutorial_button.success,Bake Tutorial opened.,,
 CheckForUpdateButton.label,Check now for Update,今すぐアップデートを確認,업데이트 체크
 CheckForUpdateButton.desc,Checks if a new update is available for CATS,,
 UpdateToLatestButton.label,Update Now,今すぐアップデート,지금 업데이트
@@ -1259,3 +1141,14 @@ bpy.types.Scene.cats_update_action.ignore.label,Ignore this version,このバー
 bpy.types.Scene.cats_update_action.ignore.desc,This ignores this version. You will be reminded again when the next version releases,,
 bpy.types.Scene.cats_update_action.defer.label,Remind me later,後で通知する,나중에 다시보기
 bpy.types.Scene.cats_update_action.defer.desc,Hides the update notification til the next Blender restart,,
+DecimationPanel.preset.excellent.label,Excellent,優れた,
+DecimationPanel.preset.excellent.description,The maximum number of tris you can have for an Excellent rating.,優れた評価を得るために持つことができるトリスの最大数,당신의 아바타가 Excellent 등급을 받을 수 있는 최대 삼각폴리곤(Tris) 개수입니다.
+DecimationPanel.preset.good.label,Good,良い,
+DecimationPanel.preset.good.description,The maximum number of tris you can have for a Good rating.,あなたが良い評価のために持つことができるトリスの最大数,당신의 아바타가 Good 등급을 받을 수 있는 최대 삼각폴리곤(Tris) 개수입니다.
+DecimationPanel.preset.quest.label,Quest,,
+DecimationPanel.preset.quest.description,"The recommended number of tris for Quest avatars.
+merge_visible_meshes_only,"Merge Visible Meshes Only"
+select_this_to_keep_the_bones_after_merging_them_to_their_parents_or_to_the_active_bone,"Select this to keep the bones after merging them to their parents or to the active bone"
+select_this_to_only_merge_the_weights_of_the_visible_meshes,"Select this to only merge the weights of the visible meshes"
+keep_merged_bones,"Keep Merged Bones"
+merge_visible_meshes_only,"Merge Visible Meshes Only"

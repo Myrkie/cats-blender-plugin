@@ -1,3 +1,5 @@
+# GPL License
+
 import os
 import ssl
 import bpy
@@ -12,6 +14,7 @@ from threading import Thread
 from collections import OrderedDict
 from bpy.app.handlers import persistent
 from .tools.translations import t
+from .tools.common import wrap_dynamic_enum_items
 
 no_ver_check = False
 fake_update = False
@@ -167,7 +170,7 @@ class ShowPatchnotesPanel(bpy.types.Operator):
         global used_updater_panel
         used_updater_panel = True
         dpi_value = get_user_preferences().system.dpi
-        return context.window_manager.invoke_props_dialog(self, width=dpi_value * 8.2)
+        return context.window_manager.invoke_props_dialog(self, width=int(dpi_value * 8.2))
 
     def check(self, context):
         # Important for changing options
@@ -216,7 +219,7 @@ class ConfirmUpdatePanel(bpy.types.Operator):
 
     def invoke(self, context, event):
         dpi_value = get_user_preferences().system.dpi
-        return context.window_manager.invoke_props_dialog(self, width=dpi_value * 4.1)
+        return context.window_manager.invoke_props_dialog(self, width=int(dpi_value * 4.1))
 
     def check(self, context):
         # Important for changing options
@@ -280,7 +283,7 @@ class UpdateCompletePanel(bpy.types.Operator):
 
     def invoke(self, context, event):
         dpi_value = get_user_preferences().system.dpi
-        return context.window_manager.invoke_props_dialog(self, width=dpi_value * 4.1)
+        return context.window_manager.invoke_props_dialog(self, width=int(dpi_value * 4.1))
 
     def check(self, context):
         # Important for changing options
@@ -329,7 +332,7 @@ class UpdateNotificationPopup(bpy.types.Operator):
 
     def invoke(self, context, event):
         dpi_value = get_user_preferences().system.dpi
-        return context.window_manager.invoke_props_dialog(self, width=dpi_value * 4.6)
+        return context.window_manager.invoke_props_dialog(self, width=int(dpi_value * 4.6))
 
     # def invoke(self, context, event):
     #     return context.window_manager.invoke_props_dialog(self)
@@ -744,8 +747,7 @@ def get_version_list(self, context):
         for version in version_list.keys():
             choices.append((version, version, version))
 
-    bpy.types.Object.Enum = choices
-    return bpy.types.Object.Enum
+    return choices
 
 
 def get_user_preferences():
@@ -944,7 +946,7 @@ def register(bl_info, dev_branch, version_str):
     bpy.types.Scene.cats_updater_version_list = bpy.props.EnumProperty(
         name=t('bpy.types.Scene.cats_updater_version_list.label'),
         description=t('bpy.types.Scene.cats_updater_version_list.desc'),
-        items=get_version_list
+        items=wrap_dynamic_enum_items(get_version_list, 'cats_updater_version_list', sort=False)
     )
     bpy.types.Scene.cats_update_action = bpy.props.EnumProperty(
         name=t('bpy.types.Scene.cats_update_action.label'),

@@ -1,27 +1,4 @@
-# MIT License
-
-# Copyright (c) 2017 GiveMeAllYourCats
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the 'Software'), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-# Code author: Hotox
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
+# GPL License
 
 import bpy
 import copy
@@ -67,7 +44,7 @@ class MergeArmature(bpy.types.Operator):
             return {'CANCELLED'}
 
         merge_parent = merge_armature.parent
-        base_parent  = base_armature.parent
+        base_parent = base_armature.parent
         if merge_parent or base_parent:
             if context.scene.merge_same_bones:
                 if merge_parent:
@@ -190,7 +167,6 @@ class AttachMesh(bpy.types.Operator):
 
         self.report({'INFO'}, t('AttachMesh.success'))
         return {'FINISHED'}
-
 
 @register_wrap
 class CustomModelTutorialButton(bpy.types.Operator):
@@ -331,10 +307,11 @@ def merge_armatures(base_armature_name, merge_armature_name, mesh_only, mesh_nam
     armature = Common.get_armature(armature_name=base_armature_name)
 
     # Clean up shape keys
-    for mesh_base in meshes_base:
-        Common.clean_shapekeys(mesh_base)
-    for mesh_merge in meshes_merge:
-        Common.clean_shapekeys(mesh_merge)
+    if bpy.context.scene.merge_armatures_cleanup_shape_keys:
+        for mesh_base in meshes_base:
+            Common.clean_shapekeys(mesh_base)
+        for mesh_merge in meshes_merge:
+            Common.clean_shapekeys(mesh_merge)
 
     # Join the meshes
     if bpy.context.scene.merge_armatures_join_meshes:

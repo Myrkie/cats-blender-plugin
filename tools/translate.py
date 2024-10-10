@@ -1,35 +1,11 @@
-# MIT License
+# GPL License
 
-# Copyright (c) 2017 GiveMeAllYourCats
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the 'Software'), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-# Code author: GiveMeAllYourCats
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
-# Edits by: GiveMeAllYourCats, Hotox
 import re
 import os
 import bpy
 import copy
 import json
 import pathlib
-import platform
 import traceback
 import collections
 import requests.exceptions
@@ -70,7 +46,6 @@ class TranslateShapekeyButton(bpy.types.Operator):
         saved_data = Common.SavedData()
 
         to_translate = []
-
         for mesh in Common.get_meshes_objects(mode=2):
             if Common.has_shapekeys(mesh):
                 for shapekey in mesh.data.shape_keys.key_blocks:
@@ -442,9 +417,12 @@ def update_dictionary(to_translate_list, translating_shapes=False, self=None):
             if self:
                 self.report({'ERROR'}, t('update_dictionary.error.cantConnect'))
             return
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             if self:
-                self.report({'ERROR'}, t('update_dictionary.error.temporaryBan') + t('update_dictionary.error.catsTranslated'))
+                print(traceback.format_exc())
+                self.report({'ERROR'}, 'Either Google changed their API or you got banned from Google Translate temporarily!'
+                                       '\nCats translated what it could with the local dictionary,'
+                                       '\nbut you will have to try again later for the Google translations.')
             print('YOU GOT BANNED BY GOOGLE!')
             return
         except RuntimeError as e:
@@ -472,7 +450,7 @@ def update_dictionary(to_translate_list, translating_shapes=False, self=None):
                 translator = google_translator(url_suffix='com')
                 continue
 
-            # If if didn't work after 20 tries, just quit
+            # If if didn't work after 3 tries, just quit
             # The response from Google was printed into "cats/resources/google-response.txt"
             if self:
                 self.report({'ERROR'}, t('update_dictionary.error.apiChanged'))

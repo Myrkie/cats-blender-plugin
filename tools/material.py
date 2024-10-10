@@ -1,31 +1,4 @@
-# MIT License
-
-# Copyright (c) 2017 GiveMeAllYourCats
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the 'Software'), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-# Code author: GiveMeAllYourCats
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
-
-# Code author: Michael Williamson
-# Repo: https://github.com/scorpion81/blender-addons/blob/master/space_view3d_materials_utils.py
-# Edits by: GiveMeAllYourCats
+# GPL License
 
 import os
 import bpy
@@ -185,42 +158,48 @@ class CombineMaterialsButton(bpy.types.Operator):
 
         for ob in objs:
             if ob.type == 'MESH':
-                mats = ob.material_slots.keys()
+                Common.set_active(ob)
+                bpy.ops.object.material_slot_remove_unused()
 
-                usedMatIndex = []
-                faceMats = []
-                me = ob.data
-                for f in me.polygons:
-                    faceindex = f.material_index
-                    if faceindex >= len(mats):
-                        continue
+                #Why do all below when you can just do what is above? - @989onan
 
-                    currentfacemat = mats[faceindex]
-                    faceMats.append(currentfacemat)
 
-                    found = 0
-                    for m in usedMatIndex:
-                        if m == faceindex:
-                            found = 1
+#                mats = ob.material_slots.keys()
 
-                    if found == 0:
-                        usedMatIndex.append(faceindex)
+#                usedMatIndex = []
+#                faceMats = []
+#                me = ob.data
+#                for f in me.polygons:
+#                    faceindex = f.material_index
+#                    if faceindex >= len(mats):
+#                        continue
 
-                ml = []
-                mnames = []
-                for u in usedMatIndex:
-                    ml.append(mats[u])
-                    mnames.append(mats[u])
+#                    currentfacemat = mats[faceindex]
+#                    faceMats.append(currentfacemat)
 
-                self.assignmatslots(ob, ml)
+#                    found = False
+#                    for m in usedMatIndex:
+#                        if m == faceindex:
+#                            found = True
 
-                i = 0
-                for f in me.polygons:
-                    if i >= len(faceMats):
-                        continue
-                    matindex = mnames.index(faceMats[i])
-                    f.material_index = matindex
-                    i += 1
+#                    if found == False:
+#                        usedMatIndex.append(faceindex)
+
+#                ml = []
+#                mnames = []
+#                for u in usedMatIndex:
+#                    ml.append(mats[u])
+#                    mnames.append(mats[u])
+
+#                self.assignmatslots(ob, ml)
+
+#                i = 0
+#                for f in me.polygons:
+#                    if i >= len(faceMats):
+#                        continue
+#                    matindex = mnames.index(faceMats[i])
+#                    f.material_index = matindex
+#                    i += 1
 
     # Iterates over each material slot and hashes combined image filepaths and material settings
     # Then uses this hash as the dict keys and material data as values
@@ -259,13 +238,9 @@ class CombineMaterialsButton(bpy.types.Operator):
                         for node in nodes:
 
                             # Skip certain known nodes
-                            ignore_this_node = False
-                            for name in ignore_nodes:
-                                if name in node.name or name in node.label:
-                                    ignore_this_node = True
-                                    break
-                            if ignore_this_node:
+                            if node.name in ignore_nodes or node.label in ignore_nodes:
                                 continue
+
                             # Add images to hash and skip toon and shpere textures
                             if node.type == 'TEX_IMAGE':
                                 image = node.image

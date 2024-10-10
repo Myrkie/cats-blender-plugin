@@ -1,35 +1,8 @@
-# MIT License
-
-# Copyright (c) 2017 GiveMeAllYourCats
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the 'Software'), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-# Code author: Shotariya
-# Repo: https://github.com/Grim-es/shotariya
-# Code author: Neitri
-# Repo: https://github.com/netri/blender_neitri_tools
-# Edits by: GiveMeAllYourCats, Hotox
+# GPL License
 
 import bpy
 import copy
 import math
-import platform
 from mathutils import Matrix
 
 from . import common as Common
@@ -194,6 +167,15 @@ class FixArmature(bpy.types.Operator):
                 source_engine = True
                 break
 
+        #Perform "Blenda" specific operation. This is needed because Spine1 on this model represents the hips and that conflicts with other mappings.
+        for bone in armature.pose.bones:
+            if bone.name.startswith("cShrugger"):
+                for bone in armature.pose.bones:
+                    if bone.name == "Spine1":
+                        bone.name = "Hips"
+                        break
+                break
+
         # Remove unused animation data
         if armature.animation_data and armature.animation_data.action and armature.animation_data.action.name == 'ragdoll':
             armature.animation_data_clear()
@@ -271,7 +253,9 @@ class FixArmature(bpy.types.Operator):
                         to_delete.append(child2.name)
                         continue
             for obj_name in to_delete:
-                Common.delete_hierarchy(Common.get_objects()[obj_name])
+                Common.switch('EDIT')
+                Common.switch('OBJECT')
+                Common.delete_hierarchy(bpy.data.objects[obj_name])
 
         # Remove objects from different layers and things that are not meshes
         get_current_layers = []
@@ -322,6 +306,8 @@ class FixArmature(bpy.types.Operator):
             bone.lock_scale[2] = False
 
         # Remove empty mmd object and unused objects
+        Common.switch('EDIT')
+        Common.switch('OBJECT')
         Common.remove_empty()
         Common.remove_unused_objects()
 
@@ -329,7 +315,45 @@ class FixArmature(bpy.types.Operator):
         if is_vrm:
             for mesh in Common.get_meshes_objects(mode=2):
                 if mesh.name.endswith(('.baked', '.baked0')):
-                    mesh.parent = armature  # TODO
+                    mesh.parent = armature
+
+        # Set the armature into only one collection and set all of its meshes into only that same collection.
+        # This ensures that meshes visually appear under the armature in the outliner and only appear once.
+        # 2.79 and older don't have collections, so this is only relevant for 2.80 and newer.
+        if not Common.version_2_79_or_older():
+            # Set the armature to only be linked inside of one collection
+            #
+            # Get the collections the armature is in
+            collections_armature_is_in = armature.users_collection
+            # The armature being in at least one collection is the expected case.
+            # Unlink the armature from all its collections except the first.
+            if collections_armature_is_in:
+                # The first collection is the one we'll make sure the armature and all its meshes are linked in
+                armature_collection = collections_armature_is_in[0]
+                # Unlink the armature from all the other collections
+                for col in collections_armature_is_in[1::]:
+                    # Unlink the armature from the collection
+                    col.objects.unlink(armature)
+            # The armature should always be in a collection if it's in the current view layer, but if it's not for some
+            # reason, link it to the scene collection.
+            else:
+                # Get the scene collection
+                armature_collection = context.scene.collection
+                # Link the armature to the scene collection
+                armature_collection.objects.link(armature)
+
+            # Link all the meshes to the same collection as the armature and unlink them from all other collections
+            for mesh in Common.get_meshes_objects():
+                mesh_already_in_armature_collection = False
+                # Unlink the mesh from all collections that aren't armature_collection
+                for col in mesh.users_collection:
+                    if col == armature_collection:
+                        mesh_already_in_armature_collection = True
+                    else:
+                        col.objects.unlink(mesh)
+                # Link the mesh to armature_collection if it's not already linked to armature_collection
+                if not mesh_already_in_armature_collection:
+                    armature_collection.objects.link(mesh)
 
         # Check if weird FBX model
         print('CHECK TRANSFORMS:', armature.scale[0], armature.scale[1], armature.scale[2])
@@ -345,10 +369,6 @@ class FixArmature(bpy.types.Operator):
 
         # Fixes bones disappearing, prevents bones from having their tail and head at the exact same position
         Common.fix_zero_length_bones(armature, x_cord, y_cord, z_cord)
-
-        # Combines same materials
-        if context.scene.combine_mats:
-            bpy.ops.cats_material.combine_mats()
 
         # Apply transforms of this model
         Common.apply_transforms()
@@ -392,9 +412,6 @@ class FixArmature(bpy.types.Operator):
 
                 Common.sort_shape_keys(mesh.name, shapekey_order)
 
-            # Remove empty shape keys and then save the shape key order
-            Common.clean_shapekeys(mesh)
-            Common.save_shapekey_order(mesh.name)
 
             # Clean material names. Combining mats would do this too
             Common.clean_material_names(mesh)
@@ -417,6 +434,18 @@ class FixArmature(bpy.types.Operator):
                         Common.fix_mmd_shader(mesh)
                     Common.fix_vrm_shader(mesh)
                     Common.add_principled_shader(mesh)
+                    for mat_slot in mesh.material_slots:  # Fix transparency per polygon and general garbage look in blender. Asthetic purposes to fix user complaints.
+                        mat_slot.material.shadow_method = "HASHED"
+                        mat_slot.material.blend_method = "HASHED"
+
+			# Remove empty shape keys and then save the shape key order
+            Common.clean_shapekeys(mesh)
+            Common.save_shapekey_order(mesh.name)
+
+            # Combines same materials
+            if context.scene.combine_mats:
+                bpy.ops.cats_material.combine_mats()
+
 
             # Reorders vrc shape keys to the correct order
             Common.sort_shape_keys(mesh.name)
@@ -1023,12 +1052,12 @@ class FixArmature(bpy.types.Operator):
                             if not temp_list_reparent_bones.get(child.name):
                                 temp_list_reparent_bones[child.name] = bone_parent.name
 
-                    # Mix the weights
-                    Common.mix_weights(mesh, bone_child.name, bone_parent.name)
-
                     # Add bone to delete list
                     if bone_child.name not in bones_to_delete:
                         bones_to_delete.append(bone_child.name)
+
+                    # Mix the weights
+                    Common.mix_weights(mesh, bone_child.name, bone_parent.name)
 
             # Merge weights
             for bone_new, bones_old in temp_reweight_bones.items():
@@ -1090,12 +1119,12 @@ class FixArmature(bpy.types.Operator):
                                 if not temp_list_reparent_bones.get(child.name):
                                     temp_list_reparent_bones[child.name] = bone[0]
 
-                        # print(vg.name + " to " + bone[0])
-                        Common.mix_weights(mesh, vg.name, bone[0])
-
                         # Add bone to delete list
                         if vg.name not in bones_to_delete:
                             bones_to_delete.append(vg.name)
+
+                        # Mix and delete group
+                        Common.mix_weights(mesh, vg.name, bone[0])
 
             # Old mixing weights. Still important
             for key, value in temp_list_reweight_bones.items():
@@ -1142,13 +1171,12 @@ class FixArmature(bpy.types.Operator):
                     print('BUG: ' + vg_to.name + ' tried to mix weights with itself!')
                     continue
 
-                # Mix the weights
-                # print(vg_from.name, 'into', vg_to.name)
-                Common.mix_weights(mesh, vg_from.name, vg_to.name)
-
                 # Add bone to delete list
                 if vg_from.name not in bones_to_delete:
                     bones_to_delete.append(vg_from.name)
+
+                # Mix the weights
+                Common.mix_weights(mesh, vg_from.name, vg_to.name)
 
             # Put back armature modifier
             mod = mesh.modifiers.new("Armature", 'ARMATURE')
@@ -1224,8 +1252,6 @@ class FixArmature(bpy.types.Operator):
                     set_material_shading()
             except RuntimeError:
                 pass
-
-        Common.reset_context_scenes()
 
         wm.progress_end()
 
@@ -1307,3 +1333,5 @@ def set_material_shading():
                     space.shading.studio_light = 'forest.exr'
                     space.shading.studiolight_rotate_z = 0.0
                     space.shading.studiolight_background_alpha = 0.0
+                    if bpy.app.version >= (2, 82):
+                        space.shading.render_pass = 'COMBINED'

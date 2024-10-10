@@ -1,3 +1,5 @@
+# GPL License
+
 import bpy
 import addon_utils
 from importlib import import_module
@@ -84,6 +86,8 @@ class OptimizePanel(ToolPanel, bpy.types.Panel):
 
         if context.scene.optimize_mode == 'ATLAS':
 
+            col.label(text="For PBR/Normal maps, use Bake.", icon='INFO')
+
             # if not version_2_79_or_older():  # TODO
             #     col = box.column(align=True)
             #     row = col.row(align=True)
@@ -92,6 +96,7 @@ class OptimizePanel(ToolPanel, bpy.types.Panel):
             #     col.separator()
             #     return
 
+            col.separator()
             col = box.column(align=True)
             row = col.row(align=True)
             row.scale_y = 0.75

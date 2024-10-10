@@ -1,3 +1,5 @@
+# GPL License
+
 import bpy
 
 from .. import globs
@@ -32,6 +34,9 @@ class CreditsPanel(ToolPanel, bpy.types.Panel):
         row = col.row(align=True)
         row.scale_y = 0.5
         row.label(text=t('CreditsPanel.descContributors'))
+        row = col.row(align=True)
+        row.scale_y = 0.5
+        row.label(text=t('CreditsPanel.descContributors2'))
         col.separator()
         row = col.row(align=True)
         row.label(text=t('CreditsPanel.desc5'))
@@ -39,7 +44,7 @@ class CreditsPanel(ToolPanel, bpy.types.Panel):
         row = col.row(align=True)
         row.scale_y = 1.4
         row.operator(Credits.DiscordButton.bl_idname, icon_value=Supporter.preview_collections["custom_icons"]["discord1"].icon_id)
-        row = col.row(align=True)
-        row.operator(Credits.ForumButton.bl_idname, icon_value=Supporter.preview_collections["custom_icons"]["cats1"].icon_id)
+        # row = col.row(align=True)
+        # row.operator(Credits.ForumButton.bl_idname, icon_value=Supporter.preview_collections["custom_icons"]["cats1"].icon_id)
         row = col.row(align=True)
         row.operator(Credits.PatchnotesButton.bl_idname, icon='WORDWRAP_ON')
